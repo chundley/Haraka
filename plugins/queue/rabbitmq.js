@@ -40,8 +40,8 @@ exports.hook_queue = function(next, connection) {
                     logger.logdebug( "queueSuccess");
                     return next(OK,"Successfully Queued! in rabbitmq");
                 }
-                
-                
+
+
             });
 
         }
@@ -50,10 +50,10 @@ exports.hook_queue = function(next, connection) {
             exports.init_rabbitmq_server();
             return next();
         }
-        
+
 
     });
-   
+
 }
 
 //This initializes the connection to rabbitmq server, It reads values from rabbitmq.ini file in config directory.
@@ -66,6 +66,8 @@ exports.init_rabbitmq_server = function() {
     //Just putting the defaults
     var rabbitmq_ip  = '127.0.0.1';
     var rabbitmq_port = '5672';
+    var rabbitmq_login = 'guest';
+    var rabbitmq_password = 'guest';
     var confirm = true;
     var durable = true;
     var autoDelete = false;
@@ -75,6 +77,8 @@ exports.init_rabbitmq_server = function() {
     if (config.rabbitmq) {
         rabbitmq_ip = config.rabbitmq.server_ip || '127.0.0.1';
         rabbitmq_port = config.rabbitmq.server_port || '5672';
+        rabbitmq_login = config.rabbitmq.login || 'guest';
+        rabbitmq_password = config.rabbitmq.password || 'guest';
         exchangeName = config.rabbitmq.exchangeName || 'emailMessages';
         exchangeType = config.rabbitmq.exchangeType || 'direct';
         confirm = config.rabbitmq.confirm === 'true'|| true;
@@ -94,7 +98,7 @@ exports.init_rabbitmq_server = function() {
 
     //Create connection to the rabbitmq server
     logger.logdebug("About to Create connection with server");
-    rabbitqueue = amqp.createConnection({ host: rabbitmq_ip , port : rabbitmq_port });
+    rabbitqueue = amqp.createConnection({ host: rabbitmq_ip , port : rabbitmq_port , login : rabbitmq_login, password : rabbitmq_password });
 
 
     //Declaring listerner on error on connection.
@@ -122,7 +126,7 @@ exports.init_rabbitmq_server = function() {
 
 
             logger.logdebug("connExchange with server "+connExchange + " autoDelete : "+autoDelete);
-            
+
             //Exchange is now open, will try to open queue.
               return rabbitqueue.queue(queueName,{autoDelete: autoDelete,  durable:  durable  } , function(connQueue) {
               logger.logdebug("connQueue with server "+connQueue);
@@ -153,5 +157,5 @@ exports.init_rabbitmq_server = function() {
         });
 
     });
-    
+
 }
