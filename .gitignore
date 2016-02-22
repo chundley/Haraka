@@ -1,4 +1,2 @@
 node_modules
-config/host_list
-config/rabbitmq.ini
 .build
