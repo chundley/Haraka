@@ -71,6 +71,12 @@ fi
 # app deploy/run
 #############################################################################################
 
+# back up files we don't want overwritten by the deployment
+echo -e ${Green}${Bold}"\n~~~ Deployment (haraka): Backing up config ~~~\n"${Rst}
+pushd $DEST                                    # get to destination
+cp -fv ./config/host_list ../host_list         # copy host_list so we can bring it back after deploy
+cp -fv ./config/rabbitmq.ini ../rabbitmq.ini   # copy rabbitmq.ini so we can bring it back after deploy
+
 # pull latest from release
 echo -e ${Green}${Bold}"\n~~~ Deployment (haraka): Pulling latest from github ~~~\n"${Rst}
 pushd $ROOT             # get to project root
@@ -96,6 +102,12 @@ echo -e ${Green}${Bold}"\n~~~ Deployment (haraka): Updating node packages ~~~\n"
 pushd $DEST     # get to dest root
 npm install     # install new node packages (if  any)
 popd
+
+# copy backed up files back in
+echo -e ${Green}${Bold}"\n~~~ Deployment (haraka): Restoring config ~~~\n"${Rst}
+pushd $DEST                                    # get to destination
+cp -fv ../host_list ./config/host_list         # get original host_list back after deploy
+cp -fv ../rabbitmq.ini ./config/rabbitmq.ini   # get original rabbitmq.ini back after deploy
 
 # restart service
 echo -e ${Green}${Bold}"\n~~~ Deployment (haraka): Restart service ~~~\n"${Rst}
