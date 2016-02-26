@@ -100,7 +100,7 @@ cp -fRuv .build/* $DEST                  # copy files from fresh build into prod
 # update node packages
 echo -e ${Green}${Bold}"\n~~~ Deployment (haraka): Updating node packages ~~~\n"${Rst}
 pushd $DEST     # get to dest root
-npm install     # install new node packages (if  any)
+sudo npm install     # install new node packages (if  any)
 popd
 
 # copy backed up files back in
